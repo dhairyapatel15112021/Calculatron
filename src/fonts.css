@@ -1,0 +1,9 @@
+@font-face {
+    font-family: 'DigitalNumbers';
+    src: url('./DigitalNumbers-Regular.ttf') format('truetype');
+  }
+  
+  body {
+    font-family: 'DigitalNumbers', sans-serif;
+  }
+  
