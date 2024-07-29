@@ -1,51 +1,88 @@
 import React, { useRef, useState } from 'react';
 import './App.css';
 import sound from './Assets/archivo.mp3';
-import claculate from './calculation';
+import calculate from './calculation';
+
 function App() {
   const [stack, setStack] = useState([]);
   const [isOperator, setIsOperator] = useState(false);
   const [isDot, setIsDot] = useState(false);
   const count = useRef(0);
+
   const array = [{ grey: 'C' }, { grey: '+/-' }, { grey: '%' }, { orange: '/' }, { white: '7' }, { white: '8' },
   { white: '9' }, { orange: 'x' }, { white: '4' }, { white: '5' }, { white: '6' }, { orange: '-' }, { white: '3' },
   { white: '2' }, { white: '1' }, { orange: '+' }, { white: '0' }, { white: '.' }, { red: '=' }];
+
+  function checkCalculation(answer) {
+    if (typeof answer !== "undefined" && answer !== "Error") {
+      answer = answer.toString();
+      if (answer.includes('.')) {
+        answer = parseFloat(answer).toFixed(3).toString();
+        setIsDot(true);
+      }
+      else {
+        setIsDot(false);
+      }
+      count.current = answer.length;
+      setIsOperator(false);
+      setStack([answer]);
+    }
+    else {
+      setIsDot(false);
+      setIsOperator(false);
+      setStack([0]);
+    }
+  }
+
+  function handleCalculationResult(answer){
+    if (typeof answer !== "undefined" && answer !== "Error") {
+      answer = answer.toString();
+      if (answer.includes(".")) {
+        setIsDot(true);
+        answer = parseFloat(answer).toFixed(3).toString();
+      }
+      else {
+        setIsDot(false);
+      }
+      count.current = answer.length;
+      setStack([answer]);
+    }
+    else {
+      setStack([0]);
+      setIsDot(false);
+    }
+    setIsOperator(false);
+  }
+
   function click(clickedvalue) {
     if (clickedvalue === "C") {
-      setStack([claculate.clearAnswer()]);
+      setStack([calculate.clearAnswer()]);
       count.current = 0;
+      setIsDot(false);
+      setIsOperator(false);
       return;
     }
     else if (clickedvalue === "=" && !isOperator) {
-      let answer = claculate.calulation(stack);
-      if (typeof answer !== "undefined"){
-        if(answer.includes('.')){
-          answer = parseFloat(answer).toFixed(3).toString();
-          setIsDot(true);
-        }
-        else{
-          setIsDot(false);
-        }
-        count.current = answer.length;
-        setStack([answer]);
-      }
+      let answer = calculate.calulation(stack);
+      checkCalculation(answer);
       return;
     }
-    else if ((stack.length === 0 && (clickedvalue === '+/-' || clickedvalue === '+' || clickedvalue === '-' || clickedvalue === 'x' || clickedvalue === '/' ||
-      clickedvalue === '%' || clickedvalue === '.'))||(count.current>=9)) {
+    else if ((stack.length === 0 && ['+/-', '+', '-', 'x', '/', '%', '.'].includes(clickedvalue)) ||
+    count.current >= 9) {
       return;
     }
     else if (stack.length === 0) {
       setStack([clickedvalue]);
       return;
     }
-    
     else if (clickedvalue === "+/-" && !isOperator) {
-      setStack([claculate.negation(stack)]);
+      let answer = calculate.negation(stack);
+      handleCalculationResult(answer);
       return;
     }
     else if (clickedvalue === "%" && !isOperator) {
-      setStack([claculate.percentage(stack)]);
+      let answer = calculate.percentage(stack);
+      handleCalculationResult(answer);
       return;
     }
     switch (stack[stack.length - 1]) {
@@ -56,6 +93,7 @@ function App() {
       case 'x':
       case '%':
         switch (clickedvalue) {
+          case '0':
           case '1':
           case '2':
           case '3':
@@ -67,7 +105,7 @@ function App() {
           case '9':
             setStack([...stack, clickedvalue]);
             setIsOperator(false);
-            count.current=count.current+1;
+            count.current = count.current + 1;
             break;
 
           default:
@@ -86,7 +124,7 @@ function App() {
             setStack([...stack, clickedvalue]);
             setIsOperator(true);
             setIsDot(false);
-            count.current=count.current+1;
+            count.current = count.current + 1;
             break;
 
           default:
@@ -95,13 +133,13 @@ function App() {
               newStack[newStack.length - 1] = newStack[newStack.length - 1] + clickedvalue;
               setStack(newStack);
               setIsDot(true);
-              count.current=count.current+1;
-            } 
-            else if(clickedvalue !== '.'){
+              count.current = count.current + 1;
+            }
+            else if (clickedvalue !== '.') {
               let newStack = [...stack];
               newStack[newStack.length - 1] = newStack[newStack.length - 1] + clickedvalue;
               setStack(newStack);
-              count.current=count.current+1;
+              count.current = count.current + 1;
             }
             break;
         }
@@ -116,15 +154,11 @@ function App() {
     <div className="App">
       <div className='heading'>Calculatron</div>
       <div className='calc'>
-        <div className='value'>{
-          stack.map((item, index) => {
-            return (item)
-          })
-        }</div>
+        <div className='value'>{stack.join("")}</div>
         <div className='calcbody'>
           {
             array.map((obj, index) => {
-              return (<button onClick={() => click(Object.values(obj)[0])} className={`${Object.keys(obj)[0]} btn ${Object.values(obj)[0]}`}>
+              return (<button key={index} onClick={() => click(Object.values(obj)[0])} className={`${Object.keys(obj)[0]} btn ${Object.values(obj)[0]}`}>
                 {Object.values(obj)[0]}
               </button>)
             })
@@ -135,4 +169,5 @@ function App() {
     </div>
   );
 }
+
 export default App;

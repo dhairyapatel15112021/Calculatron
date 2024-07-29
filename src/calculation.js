@@ -1,4 +1,4 @@
-export default class claculate {
+export default class calculate {
     static answer = 0;
     static mulDivArray = ["x", "/"];
     static addDiffArray = ["+", "-"];
@@ -9,16 +9,16 @@ export default class claculate {
             if (index === -1) {
                 index = stack.findIndex(element => this.addDiffArray.includes(element));
             }
-            const numberLast = parseFloat(stack[index+1]);
+            const numberLast = parseFloat(stack[index + 1]);
             const operator = stack[index];
-            const numberFirst = parseFloat(stack[index-1]);
+            const numberFirst = parseFloat(stack[index - 1]);
             let result;
             switch (operator) {
                 case '+':
                     result = this.addition(numberFirst, numberLast);
                     break;
                 case '-':
-                    result = this.substraction(numberFirst, numberLast);
+                    result = this.subtraction(numberFirst, numberLast);
                     break;
                 case 'x':
                     result = this.multiplication(numberFirst, numberLast);
@@ -29,17 +29,18 @@ export default class claculate {
                 default:
                     return stack[0];
             }
-            stack.splice(index+2,0,result.toString());
-            stack.splice(index-1,3);
+            stack.splice(index + 2, 0, result.toString());
+            stack.splice(index - 1, 3);
         }
         this.answer = stack[0];
         return this.returnAnswer();
     }
+
     static addition(a, b) {
         return a + b;
     }
 
-    static substraction(a, b) {
+    static subtraction(a, b) {
         return a - b;
     }
 
@@ -48,6 +49,9 @@ export default class claculate {
     }
 
     static divison(a, b) {
+        if (b === 0) {
+            return "Error";
+        }
         return a / b;
     }
 
@@ -66,6 +70,8 @@ export default class claculate {
     }
 
     static clearAnswer() {
+        this.answer = 0;
         return 0;
     }
+    
 }
