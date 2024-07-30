@@ -13,27 +13,6 @@ function App() {
   { white: '9' }, { orange: 'x' }, { white: '4' }, { white: '5' }, { white: '6' }, { orange: '-' }, { white: '3' },
   { white: '2' }, { white: '1' }, { orange: '+' }, { white: '0' }, { white: '.' }, { red: '=' }];
 
-  function checkCalculation(answer) {
-    if (typeof answer !== "undefined" && answer !== "Error") {
-      answer = answer.toString();
-      if (answer.includes('.')) {
-        answer = parseFloat(answer).toFixed(3).toString();
-        setIsDot(true);
-      }
-      else {
-        setIsDot(false);
-      }
-      count.current = answer.length;
-      setIsOperator(false);
-      setStack([answer]);
-    }
-    else {
-      setIsDot(false);
-      setIsOperator(false);
-      setStack([0]);
-    }
-  }
-
   function handleCalculationResult(answer){
     if (typeof answer !== "undefined" && answer !== "Error") {
       answer = answer.toString();
@@ -64,7 +43,7 @@ function App() {
     }
     else if (clickedvalue === "=" && !isOperator) {
       let answer = calculate.calulation(stack);
-      checkCalculation(answer);
+      handleCalculationResult(answer);
       return;
     }
     else if ((stack.length === 0 && ['+/-', '+', '-', 'x', '/', '%', '.'].includes(clickedvalue)) ||
